@@ -35,8 +35,8 @@ def predict_with(data, model):
 
 # Récupération d'un dataframe 
 def get_données(dataset="data_trained.csv"):
-    df = pd.read_csv('./data/'+dataset)
-    return df
+    df = pd.read_csv('./data/'+dataset, sep=";")
+    return df.head(1000)
 
 # Ajout d'une ligne au dataset 
 def add_voiture(df):
