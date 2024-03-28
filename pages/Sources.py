@@ -14,9 +14,8 @@ st.title("Météorologie - Groupe 5")
 st.write("---")
 
 text_side = """
-Bienvenue sur notre Web App!
-Ici, vous pourrez retrouver des informations et prédictions météorologiques. 
-Ces données sont basées sur les données officielles françaises trouvables sur https://meteo.data.gouv.fr/
+Ici, vous trouverez des détails sur nos sources de données,
+et donc le dataset utilisé pour nos prédictions.
 """
 
 st.write(text_side)
