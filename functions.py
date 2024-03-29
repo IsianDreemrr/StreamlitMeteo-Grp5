@@ -23,73 +23,43 @@ import pandas as pd
 from os import listdir
 from os.path import isfile, join
 
-# Prédire avec le modèle de régression linéaire par défaut
+# Prédire avec le modèle par défaut
 def predict(data):
-    clf = joblib.load("./model/lr_model.sav")
+    clf = joblib.load("./models/model.keras")
     return clf.predict(data)
 
-# Prédire avec un modèle généré par entrainement sur la Web App
-def predict_with(data, model):
-    clf = joblib.load("./model/"+model)
+# Prédire avec un modèle en particulier
+def predict_with(data, model="model.keras"):
+    clf = joblib.load("./models/"+model)
     return clf.predict(data)
 
 # Récupération d'un dataframe 
-def get_données(dataset="data_trained.csv"):
+def get_données(dataset="data_trained.csv", full=False):
     df = pd.read_csv('./data/'+dataset, sep=";")
-    return df.head(1000)
+    if (dataset == "data_source.csv" and full==False):
+        return df.head(10000)
+    else: return df
 
-# Ajout d'une ligne au dataset 
-def add_voiture(df):
-    df.to_csv('./data/data_trained.csv', mode='a', index=False, header=False)
-    return True
 
 # Récupération d'un dataframe 
-def get_list_voitures(dataset="dataset_cleaned.csv"):
+def get_list_postes(dataset="data_trained.csv"):
     df = pd.read_csv('./data/'+dataset)
-    return df['carmodel'].unique()
+    return df['NOM_USUEL'].unique()
 
-# Récupération d'un dataframe 
-def get_list_couleurexterieure(dataset="dataset_cleaned.csv"):
+def get_NUM_POSTE(nom_usuel, dataset="data_trained.csv"):
     df = pd.read_csv('./data/'+dataset)
-    return df['couleurextérieure'].unique()
+    return (df.loc[df['NOM_USUEL'] == nom_usuel, 'NUM_POSTE']).head(1).iloc[0]
 
-# Récupération d'un dataframe 
-def get_list_couleurintérieure(dataset="dataset_cleaned.csv"):
+
+def get_LAT(nom_usuel, dataset="data_trained.csv"):
     df = pd.read_csv('./data/'+dataset)
-    return df['couleurintérieure'].unique()
+    return (df.loc[df['NOM_USUEL'] == nom_usuel, 'LAT']).head(1).iloc[0]
 
-# Récupération d'un dataframe 
-def get_list_norme_euro(dataset="dataset_cleaned.csv"):
+def get_LON(nom_usuel, dataset="data_trained.csv"):
     df = pd.read_csv('./data/'+dataset)
-    return df['normeeuro'].unique()
+    return (df.loc[df['NOM_USUEL'] == nom_usuel, 'LON']).head(1).iloc[0]
 
-# Récupération de la liste de tous les modèles
-def get_list_model():
-    allfiles = [f for f in listdir("./model") if isfile(join("./model", f))]
-    return allfiles
+def get_ALTI(nom_usuel, dataset="data_trained.csv"):
+    df = pd.read_csv('./data/'+dataset)
+    return (df.loc[df['NOM_USUEL'] == nom_usuel, 'ALTI']).head(1).iloc[0]
 
-# Entraînement d'un modèle 
-def train_model(df, selectedmodel="lr_model.sav"):
-    X = get_données().drop(columns=['price'])  # Variables indépendantes
-    y = get_données()['price']  
-
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    if selectedmodel == "lr_model.sav":
-        model = LinearRegression() 
-    elif selectedmodel == "ridge_model.sav":
-        alpha = 1.0  # Paramètre de régularisation, ajustez-le au besoin
-        model = Ridge(alpha=alpha) 
-
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    rmse = mean_squared_error(y_test, y_pred, squared=False)
-    r2 = r2_score(y_test, y_pred)
-
-    print("RMSE:", rmse)
-    print("R^2:", r2)
-
-    pickle.dump(model, open(selectedmodel, 'wb'))
-    os.replace(selectedmodel, "./model/"+selectedmodel)
-    return True
